@@ -1,5 +1,5 @@
 {
-  "name": "red-contrib-python-function-ps",
+  "name": "node-red-contrib-python-function-ps",
   "version": "0.0.1",
   "description": "Function Node for execute python in Node-RED",
   "node-red": {
