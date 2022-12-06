@@ -5,6 +5,13 @@ Python Function Node-RED Node using python-shell
 
 <br>
 
+### supported platforms
+- Windows
+- Linux(WSL)
+- OSX(M1)
+
+<br>
+
 ### supported python versions
 - Python 3.x
 
@@ -20,5 +27,5 @@ npm install node-red-contrib-python-function-ps
 Like function node, write python code instead javascript code and run.
 
 ## Todos
-[ ] Support for 'node.log', 'node.error' functions.
+[x] Support for 'node.log', 'node.error' functions.
 [ ] More intuitive stacktrace.
