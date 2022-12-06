@@ -1,0 +1,29 @@
+{
+  "name": "red-contrib-python-function-ps",
+  "version": "0.0.1",
+  "description": "Function Node for execute python in Node-RED",
+  "node-red": {
+    "nodes": {
+        "python-function-ps": "lib/python-function-ps.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eseunghwan/node-red-contrib-python-function-ps.git"
+  },
+  "keywords": [
+    "node-red",
+    "function",
+    "python"
+  ],
+  "author": "eseunghwan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eseunghwan/node-red-contrib-python-function-ps/issues"
+  },
+  "homepage": "https://github.com/eseunghwan/node-red-contrib-python-function-ps#readme",
+  "dependencies": {
+    "python-shell": "^3.0.1",
+    "strftime": "^0.10.1"
+  }
+}
