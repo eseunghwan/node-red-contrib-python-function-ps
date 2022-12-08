@@ -23,3 +23,9 @@
 ## 0.0.5, 0.0.6
 - add global context for 'Python Path'
 - add example flow
+
+<br>
+
+## 0.0.7
+- add global context to python as 'node.globals'
+  - in python, global is reserved
