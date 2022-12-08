@@ -1,0 +1,25 @@
+
+## 0.0.1
+- initial release
+
+<br>
+
+## 0.0.2
+- Support for 'node.log', 'node.error', 'node.warn', 'node.status' functions
+- deprecated for errors
+
+<br>
+
+## 0.0.3
+- fix errors
+
+<br>
+
+## 0.0.4
+- fix json circular structure exception.
+
+<br>
+
+## 0.0.5
+- add global context for 'Python Path'
+- add example flow
