@@ -5,6 +5,7 @@
         defaults: {
             name: {value: ""},
             pythonPath: {value: "python3"},
+            useGlobalPythonPath: { value: false }, globalPythonPathName: { value: "" },
             func: {value: "\nreturn msg"},
             outputs: {value: 1}  // Ofuscated way to persist the number of outputs of the node
         },
@@ -29,7 +30,7 @@
                     tabSize: 4,
             });
             var noderedKeywords = [
-                "msg", "msg.payload", "node", "node.send",
+                "msg", "node", "node.send",
                 "node.log", "node.warn", "node.error", "node.status"
             ];
             this.editor.completers.push({
@@ -80,8 +81,13 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-pythonPath"><i class="fa fa-file"></i> <span>PythonPath</span></label>
+        <label for="node-input-pythonPath"><i class="fa fa-file"></i> <span>Python Path</span></label>
         <input type="text" id="node-input-pythonPath" value="python3">
+    </div>
+    <div class="form-row">
+        <label for="node-input-useGlobalPythonPath"><i class="fa fa-check-square"></i> <span>Use Global</span></label>
+        <input type="checkbox" id="node-input-useGlobalPythonPath" style="width:15px;" onchange="$('#node-input-pythonPath').attr('disabled', this.checked);$('#node-input-globalPythonPathName').attr('disabled', !this.checked)">
+        <input type="text" id="node-input-globalPythonPathName" style="width:calc(70% - 15px);">
     </div>
     <div class="form-row" style="margin-bottom: 0px;">
         <label for="node-input-func"><i class="fa fa-wrench"></i> <span>Function</span></label>
