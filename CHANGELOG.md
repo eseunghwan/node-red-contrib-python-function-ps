@@ -35,3 +35,4 @@
 ## 0.0.8
 - merge 'pythonPath' and 'globalPythonPath' as 'typedInput'
 - edit html file
+- add 'circular reference error' prevention code for global context
