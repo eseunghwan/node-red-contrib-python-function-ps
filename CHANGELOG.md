@@ -29,3 +29,9 @@
 ## 0.0.7
 - add global context to python as 'node.globals'
   - in python, global is reserved
+
+<br>
+
+## 0.0.8
+- merge 'pythonPath' and 'globalPythonPath' as 'typedInput'
+- edit html file

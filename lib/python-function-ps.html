@@ -3,11 +3,11 @@
         category: "function",
         color: "#fdd0a2",
         defaults: {
-            name: {value: ""},
-            pythonPath: {value: "python3"},
-            useGlobalPythonPath: { value: false }, globalPythonPathName: { value: "" },
-            func: {value: "\nreturn msg"},
-            outputs: {value: 1}  // Ofuscated way to persist the number of outputs of the node
+            name: { value: "" },
+            pythonPathType: { value: "local" },
+            pythonPath: { value: "", required:true },
+            fnCode: { value: "\n# user code here.\n\nreturn msg" },
+            outputs: { value: 1 }  // Ofuscated way to persist the number of outputs of the node
         },
         inputs: 1,
         outputs: 1,
@@ -19,9 +19,9 @@
             $( "#node-input-outputs" ).spinner({ min:1 });
 
             var langTools = ace.require("ace/ext/language_tools");
-            this.editor = ace.edit("node-input-func-editor");
+            this.editor = ace.edit("node-input-fnCode-editor");
             this.editor.getSession().setMode("ace/mode/python");
-            this.editor.setValue($("#node-input-func").val(), -1);
+            this.editor.setValue($("#node-input-fnCode").val(), -1);
             this.editor.setOptions({
                     enableBasicAutocompletion: true,
                     enableLiveAutocompletion: true,
@@ -30,7 +30,8 @@
                     tabSize: 4,
             });
             var noderedKeywords = [
-                "msg", "node", "node.globals",
+                "msg", 'msg["payload"]',
+                "node", "node.globals",
                 "node.log", "node.warn", "node.error", "node.status"
             ];
             this.editor.completers.push({
@@ -46,56 +47,58 @@
                 }
             });
             this.editor.focus();
+
+            $("#node-input-typed-pythonPath").typedInput({
+                default: "local",
+                types: [
+                    { value: "local", label: "local:", hasValue: true },
+                    { value: "global", label: "global.", hasValue: true }
+                ],
+                typeField: $("#node-input-pythonPathType")
+            });
+
+            $("#node-input-typed-pythonPath").typedInput("type", this.pythonPathType);
+            $("#node-input-typed-pythonPath").typedInput("value", this.pythonPath);
         },
         oneditsave: function() {
-            var annot = this.editor.getSession().getAnnotations();
-            this.noerr = 0;
-            $("#node-input-noerr").val(0);
-            for (var k=0; k < annot.length; k++) {
-                //console.log(annot[k].type,":",annot[k].text, "on line", annot[k].row);
-                if (annot[k].type === "error") {
-                    $("#node-input-noerr").val(annot.length);
-                    this.noerr = annot.length;
-                }
-            }
-            $("#node-input-func").val(this.editor.getValue());
+            $("#node-input-fnCode").val(this.editor.getValue());
             delete this.editor;
+
+            // $("#node-input-pythonPathType").val($("#node-input-typed-pythonPath").typedInput("type"));
+            $("#node-input-pythonPath").val($("#node-input-typed-pythonPath").typedInput("value"));
         },
         oneditresize: function(size) {
             var rows = $("#dialog-form>div:not(.node-text-editor-row)");
             var height = $("#dialog-form").height();
-            for (var i=0;i<rows.size();i++) {
+            for (var i = 0; i<rows.size(); i++) {
                 height -= $(rows[i]).outerHeight(true);
             }
+
             var editorRow = $("#dialog-form>div.node-text-editor-row");
             height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
-            $(".node-text-editor").css("height",height+"px");
+            $(".node-text-editor").css("height", `${height}px`);
             this.editor.resize();
         }
     });
 </script>
 
-<script type="text/x-red" data-template-name="python-function-ps">
+<script type="text/html" data-template-name="python-function-ps">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-pythonPath"><i class="fa fa-file"></i> <span>Python Path</span></label>
-        <input type="text" id="node-input-pythonPath" value="python3">
-    </div>
-    <div class="form-row">
-        <label for="node-input-useGlobalPythonPath"><i class="fa fa-check-square"></i> <span>Use Global</span></label>
-        <input type="checkbox" id="node-input-useGlobalPythonPath" style="width:15px;" onchange="$('#node-input-pythonPath').attr('disabled', this.checked);$('#node-input-globalPythonPathName').attr('disabled', !this.checked)">
-        <input type="text" id="node-input-globalPythonPathName" style="width:calc(70% - 15px);">
+        <label for="node-input-typed-pythonPath"><i class="fa fa-list"></i> <span>Python Path</span></label>
+        <input id="node-input-typed-pythonPath" type="text" style="width:70%;">
+        <input id="node-input-pythonPath" type="hidden">
+        <input id="node-input-pythonPathType" type="hidden">
     </div>
     <div class="form-row" style="margin-bottom: 0px;">
-        <label for="node-input-func"><i class="fa fa-wrench"></i> <span>Function</span></label>
-        <input type="hidden" id="node-input-func" autofocus="autofocus">
-        <input type="hidden" id="node-input-noerr">
+        <label for="node-input-fnCode"><i class="fa fa-wrench"></i> <span>Function</span></label>
+        <input type="hidden" id="node-input-fnCode" autofocus="autofocus">
     </div>
     <div class="form-row node-text-editor-row">
-        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-func-editor" ></div>
+        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-fnCode-editor" ></div>
     </div>
     <div class="form-row">
         <label for="node-input-outputs"><i class="fa fa-random"></i> <span>Outputs</span></label>
