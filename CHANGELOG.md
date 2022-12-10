@@ -36,3 +36,12 @@
 - merge 'pythonPath' and 'globalPythonPath' as 'typedInput'
 - edit html file
 - add 'circular reference error' prevention code for global context
+
+<br>
+
+## 0.0.9
+- support 'print' function in function code.
+- change editor to monaco(vscode).
+- displays the corresponding values based on the selection of 'local' and 'global'.
+- move temp file creation from initialize to message input.
+- fix bugs.

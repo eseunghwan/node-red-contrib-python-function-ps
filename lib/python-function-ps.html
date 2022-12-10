@@ -1,11 +1,12 @@
+
 <script type="text/javascript">
-    RED.nodes.registerType("python-function-ps",{
+    RED.nodes.registerType("python-function-ps", {
         category: "function",
         color: "#fdd0a2",
         defaults: {
             name: { value: "" },
             pythonPathType: { value: "local" },
-            pythonPath: { value: "", required:true },
+            pythonPath: { value: "python3" }, globalPythonName: { value: "" },
             fnCode: { value: "\n# user code here.\n\nreturn msg" },
             outputs: { value: 1 }  // Ofuscated way to persist the number of outputs of the node
         },
@@ -18,35 +19,41 @@
         oneditprepare: function() {
             $( "#node-input-outputs" ).spinner({ min:1 });
 
-            var langTools = ace.require("ace/ext/language_tools");
-            this.editor = ace.edit("node-input-fnCode-editor");
-            this.editor.getSession().setMode("ace/mode/python");
-            this.editor.setValue($("#node-input-fnCode").val(), -1);
-            this.editor.setOptions({
-                    enableBasicAutocompletion: true,
-                    enableLiveAutocompletion: true,
-                    highlightSelectedWord: true,
-                    useSoftTabs: true,
-                    tabSize: 4,
+            this.editor = RED.editor.createEditor({
+                id: "node-input-fnCode",
+                mode: "ace/mode/python",
+                value: this.fnCode,
+                focus: true
             });
-            var noderedKeywords = [
-                "msg", 'msg["payload"]',
-                "node", "node.globals",
-                "node.log", "node.warn", "node.error", "node.status"
-            ];
-            this.editor.completers.push({
-                getCompletions: function (state, session, pos, prefix, callback) {
-                    callback(null, noderedKeywords.map(function (word) {
-                        return {
-                            name: word,
-                            value: word,
-                            score: 0,
-                            meta: "Node-RED"
-                        };
-                    }));
-                }
-            });
-            this.editor.focus();
+            // var langTools = ace.require("ace/ext/language_tools");
+            // this.editor = ace.edit("node-input-fnCode-editor");
+            // this.editor.getSession().setMode("ace/mode/python");
+            // this.editor.setValue($("#node-input-fnCode").val(), -1);
+            // this.editor.setOptions({
+            //         enableBasicAutocompletion: true,
+            //         enableLiveAutocompletion: true,
+            //         highlightSelectedWord: true,
+            //         useSoftTabs: true,
+            //         tabSize: 4,
+            // });
+            // var noderedKeywords = [
+            //     "msg", 'msg["payload"]',
+            //     "node", "node.globals",
+            //     "node.log", "node.warn", "node.error", "node.status"
+            // ];
+            // this.editor.completers.push({
+            //     getCompletions: function (state, session, pos, prefix, callback) {
+            //         callback(null, noderedKeywords.map(function (keyword) {
+            //             return {
+            //                 name: keyword,
+            //                 value: keyword,
+            //                 score: 0,
+            //                 meta: "Node-RED"
+            //             };
+            //         }));
+            //     }
+            // });
+            // this.editor.focus();
 
             $("#node-input-typed-pythonPath").typedInput({
                 default: "local",
@@ -58,14 +65,35 @@
             });
 
             $("#node-input-typed-pythonPath").typedInput("type", this.pythonPathType);
-            $("#node-input-typed-pythonPath").typedInput("value", this.pythonPath);
+            $("#node-input-typed-pythonPath").typedInput("value", this.pythonPathType == "local" ? this.pythonPath : this.globalPythonName);
+
+            var lastPathType = this.pythonPathType;
+            $("#node-input-typed-pythonPath").on("change", function() {
+                if ($("#node-input-typed-pythonPath").typedInput("type") != lastPathType) {
+                    lastPathType = $("#node-input-typed-pythonPath").typedInput("type");
+
+                    $("#node-input-typed-pythonPath").typedInput(
+                        "value",
+                        $("#node-input-typed-pythonPath").typedInput("type") == "local" ? $("#node-input-pythonPath").val() : $("#node-input-globalPythonName").val()
+                    );
+                }
+            });
+        },
+        oneditcancel: function() {
+            this.editor.destroy();
+            delete this.editor;
         },
         oneditsave: function() {
             $("#node-input-fnCode").val(this.editor.getValue());
+            this.editor.destroy();
             delete this.editor;
 
-            // $("#node-input-pythonPathType").val($("#node-input-typed-pythonPath").typedInput("type"));
-            $("#node-input-pythonPath").val($("#node-input-typed-pythonPath").typedInput("value"));
+            if ($("#node-input-typed-pythonPath").typedInput("type") == "local") {
+                $("#node-input-pythonPath").val($("#node-input-typed-pythonPath").typedInput("value"));
+            }
+            else {
+                $("#node-input-globalPythonName").val($("#node-input-typed-pythonPath").typedInput("value"));
+            }
         },
         oneditresize: function(size) {
             var rows = $("#dialog-form>div:not(.node-text-editor-row)");
@@ -91,56 +119,18 @@
         <label for="node-input-typed-pythonPath"><i class="fa fa-list"></i> <span>Python Path</span></label>
         <input id="node-input-typed-pythonPath" type="text" style="width:70%;">
         <input id="node-input-pythonPath" type="hidden">
+        <input id="node-input-globalPythonName" type="hidden">
         <input id="node-input-pythonPathType" type="hidden">
     </div>
     <div class="form-row" style="margin-bottom: 0px;">
         <label for="node-input-fnCode"><i class="fa fa-wrench"></i> <span>Function</span></label>
-        <input type="hidden" id="node-input-fnCode" autofocus="autofocus">
+        <!-- <input type="hidden" id="node-input-fnCode" autofocus="autofocus"> -->
     </div>
     <div class="form-row node-text-editor-row">
-        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-fnCode-editor" ></div>
+        <div style="height:250px;min-height:150px;" class="node-text-editor" id="node-input-fnCode"></div>
     </div>
     <div class="form-row">
         <label for="node-input-outputs"><i class="fa fa-random"></i> <span>Outputs</span></label>
         <input id="node-input-outputs" style="width: 60px;" value="1">
     </div>
-    <div class="form-tips"><span>See the Info tab for help writing Python functions</span></div>
-</script>
-
-<script type="text/x-red" data-help-name="python-function-ps">
-    <p>Just like the plain old Javascript function node, but writting Python!</p>
-    <p>All functionality of the javascript function node is to be expected (now or in the near future, or in a parallel universe)</p>
-    <p>Virtually all posible incoming messages are supported, available as a Python dictionary. However bear in mind that all data inside msg that is not a valid JSON data type will be dropped from it permanently</p>
-    <p><pre>THIS IS NOT READY FOR PRODUCTION YET!</pre></p>
-
-    <h2>Usage</h2>
-    <p>A function block where you can write code to do more interesting things.</p>
-    <p>The message is passed in as a Python dictionary called <code>msg</code>.</p>
-    <p>By convention it will have a <code>msg["payload"]</code> key containing
-       the body of the message.</p>
-    <h4>Logging and Error Handling</h4>
-    <p>To log any information, or report an error, the following functions are available:</p>
-        <ul>
-            <li><code>node.log("Log")</code></li>
-            <li><code>node.warn("Warning")</code></li>
-            <li><code>node.error("Error")</code></li>
-        </ul>
-    </p>
-    <p>The Catch node can also be used to handle errors. To invoke a Catch node,
-    pass <code>msg</code> as a second argument to <code>node.error</code>:</p>
-    <pre>node.error("Error msg", msg)</pre>
-    <h4>Sending messages</h4>
-    <p>The function can either return the messages it wants to pass on to the next nodes
-    in the flow, or can call <code>node.send(messages)</code>.</p>
-    <p>It can return/send:</p>
-    <ul>
-      <li>a single message dictionary - passed to nodes connected to the first output</li>
-      <li>a list of message dictionaries - passed to nodes connected to the corresponding outputs</li>
-    </ul>
-    <p>If any element of the list is itself a list of messages, multiple
-          messages are sent to the corresponding output.</p>
-    <p>If null is returned, either by itself or as an element of the list, no
-          message is passed on.</p>
-    <p>See the <a target="_new" href="http://nodered.org/docs/writing-functions.html">online documentation</a> for more help.</p>
-
 </script>
