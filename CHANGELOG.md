@@ -45,3 +45,10 @@
 - displays the corresponding values based on the selection of 'local' and 'global'.
 - move temp file creation from initialize to message input.
 - fix bugs.
+
+<br>
+
+## 0.0.10
+- fix bugs.
+- add "Import Path".
+  - before run code, add paths to "sys.path".
