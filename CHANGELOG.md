@@ -52,3 +52,10 @@
 - fix bugs.
 - add "Import Path".
   - before run code, add paths to "sys.path".
+
+<br>
+
+## 0.0.11
+- split code editor and settings as tab.
+- remove outputs spinner.
+- add 'NotImplementedError' to node.send in python code.
