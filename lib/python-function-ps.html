@@ -15,10 +15,6 @@
             </div>
         </div>
         <div id="ps-tab-settings" style="display:none">
-            <!-- <div class="form-row">
-                <label for="node-input-outputs"><i class="fa fa-random"></i> <span>Outputs</span></label>
-                <input id="node-input-outputs" style="width:60px;" value="1">
-            </div> -->
             <div class="form-row">
                 <label for="node-input-typed-pythonPath"><i class="fa fa-terminal"></i> <span>Python Path</span></label>
                 <input id="node-input-typed-pythonPath" type="text" style="width:calc(100% - 105px);">
@@ -34,30 +30,6 @@
             </div>
         </div>
     </div>
-
-    <!-- <div class="form-row">
-        <label for="node-input-typed-pythonPath"><i class="fa fa-list"></i> <span>Python Path</span></label>
-        <input id="node-input-typed-pythonPath" type="text" style="width:calc(100% - 105px);">
-        <input id="node-input-pythonPath" type="hidden">
-        <input id="node-input-globalPythonName" type="hidden">
-        <input id="node-input-pythonPathType" type="hidden">
-    </div>
-    <div class="form-row">
-        <label for="node-input-importPathList"><i class="fa fa-ellipsis-h"></i> <span>Import Paths</span></label>
-    </div>
-    <div class="form-row node-input-importPathList-container-row">
-        <ol id="node-input-importPathList-container" style="height:150px;min-height:100px;"></ol>
-    </div>
-    <div class="form-row" style="margin-bottom: 0px;">
-        <label for="node-input-fnCode"><i class="fa fa-wrench"></i> <span>Function</span></label>
-    </div>
-    <div class="form-row node-text-editor-row">
-        <div style="height:350px;min-height:200px;" class="node-text-editor" id="node-input-fnCode"></div>
-    </div>
-    <div class="form-row">
-        <label for="node-input-outputs"><i class="fa fa-random"></i> <span>Outputs</span></label>
-        <input id="node-input-outputs" style="width: 60px;" value="1">
-    </div> -->
 </script>
 
 <script type="text/javascript">
@@ -80,7 +52,7 @@
         oneditprepare: function() {
             var node = this;
 
-            var tabs = RED.tabs.create({
+            var psTab = RED.tabs.create({
                 id: "ps-tabs",
                 onchange: (tab) => {
                     $("#ps-tabs-content").children().hide();
@@ -88,17 +60,16 @@
                     RED.tray.resize();
                 }
             });
-            tabs.addTab({
+            psTab.addTab({
                 id: "ps-tab-codeEdit",
                 iconClass: "fa fa-code",
                 label: "code edit"
             });
-            tabs.addTab({
+            psTab.addTab({
                 id: "ps-tab-settings",
                 iconClass: "fa fa-cog",
                 label: "settings"
             });
-
 
             // create python code editor
             node.fnCodeEditor = RED.editor.createEditor({
@@ -107,7 +78,6 @@
                 value: node.fnCode,
                 focus: true
             });
-
 
             // create python path selector
             $("#node-input-typed-pythonPath").typedInput({
@@ -133,8 +103,8 @@
             });
 
             // map existing value
-            $("#node-input-typed-pythonPath").typedInput("type", this.pythonPathType);
-            $("#node-input-typed-pythonPath").typedInput("value", this.pythonPathType == "local" ? this.pythonPath : this.globalPythonName);
+            $("#node-input-typed-pythonPath").typedInput("type", node.pythonPathType);
+            $("#node-input-typed-pythonPath").typedInput("value", node.pythonPathType == "local" ? node.pythonPath : node.globalPythonName);
 
             // create pathlist
             $("#node-input-importPathList-container").editableList({
@@ -179,14 +149,13 @@
             }
         },
         oneditresize: function(size) {
-            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
             var height = $("#dialog-form").height();
             for (var row of $("#dialog-form>div:not(.node-text-editor-row)")) {
                 height -= $(row).outerHeight(true);
             }
 
             var editorRow = $("#dialog-form > div.node-text-editor-row");
-            height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
             $(".node-text-editor").css("height", `${height}px`);
             this.fnCodeEditor.resize();
         }

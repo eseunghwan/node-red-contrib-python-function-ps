@@ -59,3 +59,10 @@
 - split code editor and settings as tab.
 - remove outputs spinner.
 - add 'NotImplementedError' to node.send in python code.
+
+<br>
+
+## 0.0.12
+- create PS class for "read_input" and "write_output" function.
+- remove unnecessary codes.
+- fix pythontype typedinput
