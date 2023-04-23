@@ -66,3 +66,10 @@
 - create PS class for "read_input" and "write_output" function.
 - remove unnecessary codes.
 - fix pythontype typedinput
+
+<br>
+
+## 0.0.13
+- move "read_input" and "write_output" to global funtcions
+- changes of node.globals apply to node-red
+- change example flow
