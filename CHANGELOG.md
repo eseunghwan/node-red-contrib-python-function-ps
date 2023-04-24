@@ -79,3 +79,14 @@
 ## 0.0.14
 - change pickles of "read_input" and "write_output" from tempfile to memory
 - support for "req" of message(header, body, cookie only).
+
+<br>
+
+## 0.1.0
+- automatically convert datas from message and to message.
+- send/recieve all message object between node and python function.
+- fix bug of "req".
+- add "Code(Pre)" and "Code(Post)" code jobs.
+  - "Code(Pre)" runs before main code.
+  - "Code(Post)" runs after main code.
+- change default width of editor form.

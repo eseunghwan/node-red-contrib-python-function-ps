@@ -8,12 +8,7 @@
     <div class="form-row ">
         <ul style="min-width:calc(100% - 46px);" id="ps-tabs"></ul>
     </div>
-    <div id="ps-tabs-content" style="min-height: calc(100% - 95px);">
-        <div id="ps-tab-codeEdit" style="display:none">
-            <div class="form-row node-text-editor-row">
-                <div style="height:627px;min-height:400px;" class="node-text-editor" id="node-input-fnCode"></div>
-            </div>
-        </div>
+    <div id="ps-tabs-content" style="min-width: 600px;min-height: calc(100% - 95px);">
         <div id="ps-tab-settings" style="display:none">
             <div class="form-row">
                 <label for="node-input-typed-pythonPath"><i class="fa fa-terminal"></i> <span>Python Path</span></label>
@@ -29,6 +24,21 @@
                 <ol id="node-input-importPathList-container" style="height:546px;min-height:350px;"></ol>
             </div>
         </div>
+        <div id="ps-tab-codeEditPre" style="display:none">
+            <div class="form-row node-text-editor-row">
+                <div style="height:627px;min-height:400px;" class="node-text-editor" id="node-input-fnCodePre"></div>
+            </div>
+        </div>
+        <div id="ps-tab-codeEdit" style="display:none">
+            <div class="form-row node-text-editor-row">
+                <div style="height:627px;min-height:400px;" class="node-text-editor" id="node-input-fnCode"></div>
+            </div>
+        </div>
+        <div id="ps-tab-codeEditPost" style="display:none">
+            <div class="form-row node-text-editor-row">
+                <div style="height:627px;min-height:400px;" class="node-text-editor" id="node-input-fnCodePost"></div>
+            </div>
+        </div>
     </div>
 </script>
 
@@ -41,7 +51,9 @@
             pythonPathType: { value: "local" },
             pythonPath: { value: "python3" }, globalPythonName: { value: "" },
             importPathList: { value: [] },
-            fnCode: { value: "\n# user code here.\n\nreturn msg\n" }
+            fnCodePre: { value: "\n# user code here.\n\nreturn msg\n" },
+            fnCode: { value: "\n# user code here.\n\nreturn msg\n" },
+            fnCodePost: { value: "\n# user code here.\n\nreturn msg\n" }
         },
         inputs: 1,
         outputs: 1,
@@ -61,21 +73,45 @@
                 }
             });
             psTab.addTab({
-                id: "ps-tab-codeEdit",
-                iconClass: "fa fa-code",
-                label: "code edit"
-            });
-            psTab.addTab({
                 id: "ps-tab-settings",
                 iconClass: "fa fa-cog",
-                label: "settings"
+                label: "Settings"
+            });
+            psTab.addTab({
+                id: "ps-tab-codeEditPre",
+                iconClass: "fa fa-code",
+                label: "Code(Pre)"
+            });
+            psTab.addTab({
+                id: "ps-tab-codeEdit",
+                iconClass: "fa fa-code",
+                label: "Code"
+            });
+            psTab.addTab({
+                id: "ps-tab-codeEditPost",
+                iconClass: "fa fa-code",
+                label: "Code(Post)"
             });
 
+            psTab.activateTab("ps-tab-codeEdit");
+
             // create python code editor
+            node.fnCodeEditorPre = RED.editor.createEditor({
+                id: "node-input-fnCodePre",
+                mode: "ace/mode/python",
+                value: node.fnCodePre,
+                focus: true
+            });
             node.fnCodeEditor = RED.editor.createEditor({
                 id: "node-input-fnCode",
                 mode: "ace/mode/python",
                 value: node.fnCode,
+                focus: true
+            });
+            node.fnCodeEditorPost = RED.editor.createEditor({
+                id: "node-input-fnCodePost",
+                mode: "ace/mode/python",
+                value: node.fnCodePost,
                 focus: true
             });
 
@@ -125,8 +161,14 @@
             }
         },
         oneditcancel: function() {
+            this.fnCodeEditorPre.destroy();
+            delete this.fnCodeEditorPre;
+
             this.fnCodeEditor.destroy();
             delete this.fnCodeEditor;
+
+            this.fnCodeEditorPost.destroy();
+            delete this.fnCodeEditorPost;
         },
         oneditsave: function() {
             var node = this;
@@ -136,9 +178,17 @@
                 node.importPathList.push(item.find("input.input-importPathItem").val());
             });
 
+            $("#node-input-fnCodePre").val(node.fnCodeEditorPre.getValue());
+            node.fnCodeEditorPre.destroy();
+            delete node.fnCodeEditorPre;
+
             $("#node-input-fnCode").val(node.fnCodeEditor.getValue());
             node.fnCodeEditor.destroy();
             delete node.fnCodeEditor;
+
+            $("#node-input-fnCodePost").val(node.fnCodeEditorPost.getValue());
+            node.fnCodeEditorPost.destroy();
+            delete node.fnCodeEditorPost;
 
             node.pythonPathType = $("#node-input-typed-pythonPath").typedInput("type");
             if (node.pythonPathType == "local") {
@@ -156,8 +206,12 @@
 
             var editorRow = $("#dialog-form > div.node-text-editor-row");
             height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+            console.log(height);
             $(".node-text-editor").css("height", `${height}px`);
+            
+            this.fnCodeEditorPre.resize();
             this.fnCodeEditor.resize();
+            this.fnCodeEditorPost.resize();
         }
     });
 </script>
