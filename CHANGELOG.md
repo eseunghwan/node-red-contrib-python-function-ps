@@ -73,3 +73,9 @@
 - move "read_input" and "write_output" to global funtcions
 - changes of node.globals apply to node-red
 - change example flow
+
+<br>
+
+## 0.0.14
+- change pickles of "read_input" and "write_output" from tempfile to memory
+- support for "req" of message(header, body, cookie only).

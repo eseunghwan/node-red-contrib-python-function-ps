@@ -56,6 +56,8 @@ return msg
 
 [x] Support 'global' object for python.
 
+[x] Support 'flow' object for python.
+
 [x] Support for 'additional import paths'.
 
 [ ] More intuitive stacktrace.
