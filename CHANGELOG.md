@@ -90,3 +90,11 @@
   - "Code(Pre)" runs before main code.
   - "Code(Post)" runs after main code.
 - change default width of editor form.
+
+<br>
+
+## 0.1.1
+- remove unnecessary codes.
+- add "payload" to "req"(python)
+- make "Code(Pre)" and "Code(Post)" runs in same function with "Code".
+  - can use variables defined from "Code(Pre)" in "Code" and "Code(Post)"
